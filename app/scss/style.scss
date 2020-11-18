@@ -1,25 +1,9 @@
-.test{
-	background-color: #fff;
-	&:hover{
-		background-color: black;
-	};
-}
-.box{
-	align-items: center;
-  }
-.wrapper{
-	padding: 0;
-}
-.container{
-	max-width: 100px;
-	&-item{
-		display: flex;
-		justify-content: start;
-		align-items: center;
-		flex-direction: column;
-		&-inner{
-			color: black;
-		}
-	}
-}
+@import "../../node_modules/normalize.css/normalize";
 
+/* @import "../../node_modules/slick-carousel/slick/slick";
+@import "../../node_modules/magnific-popup/dist/magnific-popup"; */
+
+h1 {
+    margin: auto;
+    text-align: center;
+}
