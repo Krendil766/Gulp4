@@ -3,7 +3,9 @@ let gulp = require('gulp'),
     browserSync = require('browser-sync'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    del = require('del');
+    /* autoprefixer = require('gulp-autoprefixer'); */
 
 const paths = {
     styles: {
@@ -19,6 +21,17 @@ const paths = {
     },
 };
 
+gulp.task('css', function(){
+    return  gulp.src([
+        'node_modules/normalize.css/normalize.css',
+        'node_modules/slick-carousel/slick/slick.css',
+        /* 'node_modules/magnific-popup/dist/magnific-popup.css' */
+    ])
+    .pipe(concat('_libs.scss'))
+    .pipe(gulp.dest('app/scss'))
+    .pipe(browserSync.reload({stream:true}))
+});
+
 gulp.task('html', function() {
     return gulp.src(paths.html.src)
         .pipe(browserSync.reload({ stream: true }))
@@ -31,6 +44,9 @@ gulp.task('script', function() {
 gulp.task('scss', function() {
     return gulp.src(paths.styles.src)
         .pipe(sass({ outputStyle: 'compressed' }))
+        /* .pipe(autoprefixer({
+            browsers: 'last 8 versions'
+        })) */
         .pipe(rename({ suffix: '.min' })) /* 'expanded' */
         .pipe(gulp.dest(paths.styles.dest))
         .pipe(browserSync.reload({ stream: true }))
@@ -39,7 +55,7 @@ gulp.task('scss', function() {
 gulp.task('js', function() {
     return gulp.src([
             'node_modules/slick-carousel/slick/slick.js',
-            'node_modules/magnific-popup/dist/jquery.magnific-popup.js'
+            /* 'node_modules/magnific-popup/dist/jquery.magnific-popup.js' */
         ])
         .pipe(concat('libs.min.js'))
         .pipe(uglify())
@@ -55,10 +71,29 @@ gulp.task('browser-sync', function() {
     })
 });
 
+gulp.task('clean', async function(){
+    del.sync('dist')
+});
+
+gulp.task('export', async function(){
+    let buildHtml = gulp.src(paths.html.src)
+                .pipe(gulp.dest('dist'));
+    let buildCss = gulp.src('app/css/**/*.css')
+                .pipe(gulp.dest('dist/css'));
+    let buildJs = gulp.src(paths.scripts.src)
+                .pipe(gulp.dest('dist/js'));
+    let buildFonts = gulp.src('app/fonts/**/*.*')
+                .pipe(gulp.dest('dist/fonts'));
+    let buildImg = gulp.src('app/img/**/*.*')
+                .pipe(gulp.dest('dist/img'));
+});
+
 gulp.task('watch', function() {
     gulp.watch(paths.styles.src, gulp.parallel('scss'));
     gulp.watch(paths.html.src, gulp.parallel('html'));
     gulp.watch(paths.scripts.src, gulp.parallel('script'));
-})
+});
 
-gulp.task('default', gulp.parallel('scss', 'js', 'browser-sync', 'watch'));
+gulp.task('build', gulp.series('clean', 'export'));
+
+gulp.task('default', gulp.parallel('css','scss', 'js', 'browser-sync', 'watch'));
