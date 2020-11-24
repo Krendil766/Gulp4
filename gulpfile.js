@@ -1,10 +1,11 @@
-const  {src, dest, watch, parallel } = require('gulp');
+const  {src, dest, watch, parallel, series } = require('gulp');
 const scss = require('gulp-sass');
 const concat = require('gulp-concat');
 const { reload } = require('browser-sync');
 const uglify = require('gulp-uglify-es').default;
 const browserSync = require('browser-sync').create();
-const imagemin = require ( 'gulp-imagemin' );
+const imagemin = require('gulp-imagemin');
+const del = require('del');
 /*const autoprefixer = require('gulp-autoprefixer'); */
 
 function styles (){
@@ -54,6 +55,10 @@ function images(){
 		.pipe(dest('dist/images'))
 	}
 
+function cleanDist(){
+	return del('dist')
+}
+
 function build(){
 	return src ([
 		'app/css/style.min.css',
@@ -74,7 +79,9 @@ exports.styles = styles;
 exports.watching = watching;
 exports.browsersync = browsersync;
 exports.scripts = scripts;
-exports.build = build;
-exports.images = images
+exports.images = images;
+exports.cleanDist = cleanDist;
 
-exports.default = parallel(scripts, browsersync, watching)
+
+exports.build = series(cleanDist, /* images, */ build )
+exports.default = parallel(styles, scripts, browsersync, watching);
