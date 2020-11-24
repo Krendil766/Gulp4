@@ -1,0 +1,12 @@
+body{
+	background-color: rgb(113, 180, 26);
+	&-box{
+		text-align: center;
+	}
+}
+.wrapper{
+	max-width: 100px;
+	&-innner{
+		margin: 0;
+	}
+}
